@@ -10,82 +10,51 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-
-/* ===== VARIABLES (НАСТРАИВАЙ ТУТ) ===== */
-:root{
-  --bg:#0b1220;
-  --card:#0e1828;
-  --card-border:#1f2c45;
-
-  --primary:#3b6ef5;
-  --secondary:#2a4475;
-
-  --green:#00c853;
-  --red:#ff3d3d;
-
-  --text:#e8eef6;
-  --muted:rgba(255,255,255,0.5);
-
-  --radius:16px;
-  --radius-small:6px;
-
-  --padding:16px;
-  --gap:12px;
-
-  --btn-height:56px;
-  --box-height:56px;
-
-  --font-main:'Montserrat', sans-serif;
-}
-
-/* ===== BASE ===== */
 body{
   margin:0;
-  font-family:var(--font-main);
-  background:var(--bg);
-  color:var(--text);
+  font-family:'Montserrat', sans-serif;
+  background:#0b1220;
+  color:#e8eef6;
 }
 
 .container{
-  padding:var(--padding);
+  padding:16px;
   max-width:420px;
   margin:auto;
   display:flex;
   flex-direction:column;
-  gap:var(--gap);
+  gap:12px;
 }
 
-/* ===== TOP ===== */
 .status{
   display:flex;
   justify-content:space-between;
   padding:12px 16px;
   background:#0f1a2a;
-  border-radius:var(--radius);
-  border:1px solid var(--card-border);
+  border-radius:16px;
+  border:1px solid #1f2c45;
 }
 
-/* ===== CARD ===== */
 .card{
-  background:var(--card);
-  border-radius:var(--radius);
-  border:1px solid var(--card-border);
-  padding:var(--padding);
+  background:#0e1828;
+  border-radius:16px;
+  border:1px solid #1f2c45;
+  padding:16px;
 }
 
 .main-btn{
   width:100%;
-  height:var(--btn-height);
+  height:56px;
   border:none;
-  border-radius:var(--radius);
-  background:var(--primary);
+  border-radius:16px;
+  background:#3b6ef5;
   color:white;
   font-size:18px;
   font-weight:600;
   cursor:pointer;
 }
 
-/* ===== TRADES ===== */
+/* TRADES */
 .trade-row{
   display:flex;
   justify-content:space-between;
@@ -99,7 +68,7 @@ body{
 .green{color:#22c55e;}
 .red{color:#ff5c5c;}
 
-/* ===== OVERLAY ===== */
+/* OVERLAY */
 .overlay{
   position:fixed;
   inset:0;
@@ -112,7 +81,7 @@ body{
 }
 .loader{
   border:4px solid #eee;
-  border-top:4px solid var(--primary);
+  border-top:4px solid #3b6ef5;
   border-radius:50%;
   width:50px;
   height:50px;
@@ -120,17 +89,17 @@ body{
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* ===== CHART ===== */
+/* CHART */
 .chart-wrapper{
-  border-radius:var(--radius-small);
+  border-radius:6px;
   overflow:hidden;
 }
 .chart-box{height:240px;}
 
-/* ===== SIGNAL ===== */
+/* SIGNAL */
 .signal-box{
-  height:var(--box-height);
-  border-radius:var(--radius);
+  height:56px;
+  border-radius:16px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -142,7 +111,7 @@ body{
 .signal-box.show{opacity:1;transform:translateY(0);}
 
 .pair-box{
-  background:var(--primary);
+  background:#3b6ef5;
   font-size:22px;
   cursor:pointer;
   box-shadow:0 6px 0 rgba(0,0,0,0.25);
@@ -153,11 +122,11 @@ body{
   box-shadow:0 2px 0 rgba(0,0,0,0.25);
 }
 
-.time-box{background:var(--secondary);}
-.buy-box{background:var(--green);}
-.sell-box{background:var(--red);}
+.time-box{background:#2a4475;}
+.buy-box{background:#00c853;}
+.sell-box{background:#ff3d3d;}
 
-/* ===== TIMER ===== */
+/* TIMER */
 .timer-wrap{
   margin-top:12px;
   text-align:center;
@@ -179,27 +148,26 @@ body{
   opacity:.8;
 }
 
-/* ===== BACK ===== */
+/* BACK */
 .back-btn{
   width:100%;
   height:52px;
   margin-top:14px;
   border:none;
-  border-radius:var(--radius);
-  background:var(--secondary);
+  border-radius:16px;
+  background:#2a4475;
   color:white;
 }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 .footer{
   text-align:center;
   font-size:12px;
-  color:var(--muted);
+  opacity:.5;
   padding:10px 0;
 }
 
 .hidden{display:none;}
-
 </style>
 </head>
 
@@ -253,14 +221,13 @@ Copyright © 2026 @mark_tr8 | All Rights Reserved
 
 <script>
 
-/* JS НЕ ТРОГАЛ */
-
 const pairs=["EUR/USD","GBP/USD","USD/JPY","AUD/USD"];
 
 let timerRAF;
 let endTimestamp = 0;
 let startTimestamp = 0;
 
+/* TRADES */
 function createTrade(){
   let isWin=Math.random()<0.8;
   let div=document.createElement("div");
@@ -295,6 +262,7 @@ function loopTrades(){
   },4000+Math.random()*3000);
 }
 
+/* START */
 async function startSignal(){
   overlay.classList.remove("hidden");
   await wait(3000);
@@ -306,6 +274,7 @@ async function startSignal(){
   runSignal();
 }
 
+/* SIGNAL */
 async function runSignal(){
 
   const pair=pairs[Math.floor(Math.random()*pairs.length)];
