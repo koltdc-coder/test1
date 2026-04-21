@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -40,7 +40,6 @@ body{
   margin-bottom:16px;
 }
 
-/* BUTTON */
 .main-btn{
   width:100%;
   height:56px;
@@ -54,12 +53,24 @@ body{
 }
 
 /* TRADES */
+.trades-card{overflow:hidden;}
+#tradeList{display:flex;flex-direction:column;}
+
 .trade-row{
+  height:26px;
   display:flex;
+  align-items:center;
   justify-content:space-between;
-  padding:6px 0;
   font-size:14px;
+  opacity:0;
+  transform:translateY(-10px);
+  transition:all .35s ease;
 }
+.trade-row.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
 .green{color:#00ff9d;}
 .red{color:#ff5c5c;}
 
@@ -78,11 +89,9 @@ body{
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* CHART */
-.chart-box{
-  height:240px;
-}
+.chart-box{height:240px;}
 
-/* BLOCKS */
+/* SIGNAL BLOCKS */
 .signal-box{
   width:100%;
   height:56px;
@@ -95,37 +104,19 @@ body{
   margin-top:12px;
 
   opacity:0;
-  transform:translateY(-12px);
-  transition:all .4s ease;
+  transform:translateY(-20px) scale(.95);
+  transition:all .6s cubic-bezier(.2,.8,.2,1);
 }
 .signal-box.show{
   opacity:1;
-  transform:translateY(0);
+  transform:translateY(0) scale(1);
 }
 
-.pair-box{
-  background:#3b6ef5;
-  font-size:22px;
-}
+.pair-box{background:#3b6ef5;font-size:22px;}
+.time-box{background:#2a4475;font-size:20px;}
+.buy-box{background:#00c853;color:#00210f;}
+.sell-box{background:#ff3d3d;color:#1a0000;}
 
-.time-box{
-  background:#2a4475;
-  font-size:20px;
-}
-
-.buy-box{
-  background:#00c853;
-  color:#00210f;
-  font-size:20px;
-}
-
-.sell-box{
-  background:#ff3d3d;
-  color:#1a0000;
-  font-size:20px;
-}
-
-/* BACK */
 .back-btn{
   width:100%;
   height:52px;
@@ -150,11 +141,11 @@ body{
 <div class="container">
 
 <div class="card">
-  <button id="mainBtn" class="main-btn" onclick="startSignal()">Get Signal</button>
-  <p id="signalsLeft" style="opacity:0.8;margin-top:10px;text-align:center;">Signals left today: 10/10</p>
+  <button class="main-btn" onclick="startSignal()">Get Signal</button>
+  <p id="signalsLeft" style="text-align:center;">Signals left today: 10/10</p>
 </div>
 
-<div class="card">
+<div class="card trades-card">
   <div id="tradeList"></div>
 </div>
 
@@ -164,13 +155,10 @@ body{
 </div>
 
 <div id="signalBlock" class="card hidden">
-
   <div id="chart" class="chart-box"></div>
-
   <div id="pairBox" class="signal-box pair-box"></div>
   <div id="timeBox" class="signal-box time-box"></div>
   <div id="resultBox" class="signal-box"></div>
-
   <button class="back-btn" onclick="resetApp()">Back</button>
 </div>
 
@@ -178,69 +166,73 @@ body{
 
 <script>
 
-let signals = 10;
+let signals=10;
 
-const pairs=[
-"EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD",
+const pairs=["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD",
 "EUR/GBP","EUR/JPY","EUR/CHF","EUR/AUD","EUR/CAD",
 "GBP/JPY","GBP/CHF","GBP/AUD","GBP/CAD",
 "AUD/JPY","AUD/CAD","AUD/CHF",
-"CAD/JPY","CAD/CHF","CHF/JPY","NZD/JPY"
-];
+"CAD/JPY","CAD/CHF","CHF/JPY","NZD/JPY"];
 
-// TRADES
+// ===== TRADES =====
 function createTrade(){
   let isWin=Math.random()<0.8;
   let id=Math.floor(Math.random()*9000+1000)+"****";
-  let value=isWin
-    ?(Math.random()*91+7).toFixed(2)
-    :[5,10,15,20][Math.floor(Math.random()*4)];
+  let value=isWin?(Math.random()*91+7).toFixed(2):[5,10,15,20][Math.floor(Math.random()*4)];
 
-  return `
-  <div class="trade-row">
-    <div>Trader ID ${id}</div>
-    <div class="${isWin?'green':'red'}">
-      ${isWin?'+':'-'}${value}$
-    </div>
-  </div>`;
+  let div=document.createElement("div");
+  div.className="trade-row";
+  div.innerHTML=`<div>Trader ID ${id}</div>
+  <div class="${isWin?'green':'red'}">${isWin?'+':'-'}${value}$</div>`;
+  return div;
 }
 
 function initTrades(){
   const list=document.getElementById("tradeList");
-  list.innerHTML="";
   for(let i=0;i<5;i++){
-    list.insertAdjacentHTML("beforeend",createTrade());
+    let el=createTrade();
+    list.appendChild(el);
+    setTimeout(()=>el.classList.add("show"),50);
   }
+  setTimeout(()=>list.parentElement.style.height=list.offsetHeight+"px",100);
+  loopTrades();
 }
 
-// SIGNAL COUNT
-function updateSignals(){
-  document.getElementById("signalsLeft").innerText=`Signals left today: ${signals}/10`;
-  if(signals<=0){
-    document.getElementById("mainBtn").disabled=true;
-    document.getElementById("mainBtn").innerText="No signals";
-  }
+function loopTrades(){
+  setTimeout(()=>{
+    const list=document.getElementById("tradeList");
+    let el=createTrade();
+    list.prepend(el);
+    setTimeout(()=>el.classList.add("show"),50);
+
+    if(list.children.length>5){
+      let last=list.lastElementChild;
+      last.style.opacity=0;
+      setTimeout(()=>last.remove(),300);
+    }
+    loopTrades();
+  },Math.random()*4000+4000);
 }
 
-// START
-function startSignal(){
+// ===== SIGNAL FLOW =====
+async function startSignal(){
   if(signals<=0)return;
 
   signals--;
-  updateSignals();
+  document.getElementById("signalsLeft").innerText=`Signals left today: ${signals}/10`;
 
   resetVisuals();
 
   document.getElementById("loading").classList.remove("hidden");
 
-  setTimeout(()=>{
-    document.getElementById("loading").classList.add("hidden");
-    runSignal();
-  },2500);
+  await wait(3000);
+
+  document.getElementById("loading").classList.add("hidden");
+
+  await runSignal();
 }
 
-// FLOW
-function runSignal(){
+async function runSignal(){
 
   const pair=pairs[Math.floor(Math.random()*pairs.length)];
   const minutes=[2,3,4,5][Math.floor(Math.random()*4)];
@@ -248,49 +240,43 @@ function runSignal(){
 
   document.getElementById("signalBlock").classList.remove("hidden");
 
-  // chart (важно с задержкой)
-  setTimeout(()=>{
-    document.getElementById("chart").innerHTML="";
-    new TradingView.widget({
-      container_id:"chart",
-      symbol:pair.replace('/',''),
-      interval:"1",
-      width:"100%",
-      height:240
-    });
-  },200);
+  // chart
+  new TradingView.widget({
+    container_id:"chart",
+    symbol:pair.replace('/',''),
+    interval:"1",
+    width:"100%",
+    height:240
+  });
 
-  // pair
-  setTimeout(()=>{
-    let el=document.getElementById("pairBox");
-    el.innerText=pair;
-    el.classList.add("show");
-  },600);
+  // 1. PAIR
+  await wait(800);
+  let pairEl=document.getElementById("pairBox");
+  pairEl.innerText=pair;
+  pairEl.classList.add("show");
 
-  // time
-  setTimeout(()=>{
-    const now=new Date();
-    now.setMinutes(now.getMinutes()+minutes);
+  // 2. TIME
+  await wait(random(3000,6000));
+  const now=new Date();
+  now.setMinutes(now.getMinutes()+minutes);
 
-    const t=
-      String(now.getHours()).padStart(2,'0')+":"+
-      String(now.getMinutes()).padStart(2,'0');
+  const t=String(now.getHours()).padStart(2,'0')+":"+String(now.getMinutes()).padStart(2,'0');
 
-    let el=document.getElementById("timeBox");
-    el.innerText=t;
-    el.classList.add("show");
-  },2500);
+  let timeEl=document.getElementById("timeBox");
+  timeEl.innerText=t;
+  timeEl.classList.add("show");
 
-  // signal
-  setTimeout(()=>{
-    let el=document.getElementById("resultBox");
-    el.innerText=isBuy?"BUY ↑":"SELL ↓";
-    el.classList.add("show");
-    el.classList.add(isBuy?"buy-box":"sell-box");
-  },4500);
+  // 3. SIGNAL
+  await wait(random(3000,5000));
+  let resEl=document.getElementById("resultBox");
+  resEl.innerText=isBuy?"BUY ↑":"SELL ↓";
+  resEl.className="signal-box show "+(isBuy?"buy-box":"sell-box");
 }
 
-// RESET
+// HELPERS
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+function random(min,max){return Math.random()*(max-min)+min;}
+
 function resetVisuals(){
   document.getElementById("chart").innerHTML="";
   document.getElementById("pairBox").className="signal-box pair-box";
@@ -304,7 +290,6 @@ function resetApp(){
 
 // INIT
 initTrades();
-updateSignals();
 
 </script>
 
