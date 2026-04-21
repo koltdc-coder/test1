@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,35 +9,44 @@
 <style>
 body{
   margin:0;
-  font-family:Arial;
-  background:linear-gradient(180deg,#081a33,#030b18);
-  color:white;
-}
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  padding:16px;
-}
-.vip{
-  background:#ffd600;
-  color:black;
-  padding:6px 14px;
-  border-radius:14px;
-  font-weight:600;
+  font-family:system-ui,sans-serif;
+  background:#0b1220;
+  color:#e8eef6;
 }
 
 .container{
   padding:16px;
   max-width:420px;
   margin:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
 
+/* TOP BAR */
+.status{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 16px;
+  background:linear-gradient(180deg,#0f1a2a,#0d1726);
+  border-radius:16px;
+  border:1px solid #1f2c45;
+}
+.vip-label{
+  font-weight:600;
+}
+.connected{
+  font-weight:600;
+  color:#9bd1b4;
+}
+
+/* CARD */
 .card{
-  background:#102a54;
+  background:#0e1828;
+  border-radius:16px;
+  border:1px solid #1f2c45;
   padding:16px;
-  border-radius:18px;
-  margin-bottom:16px;
 }
 
 .main-btn{
@@ -57,43 +66,52 @@ body{
 #tradeList{display:flex;flex-direction:column;}
 
 .trade-row{
-  height:26px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
+  padding:10px 14px;
+  border-bottom:1px dashed rgba(255,255,255,.06);
   font-size:14px;
   opacity:0;
-  transform:translateY(-10px);
-  transition:all .35s ease;
+  transform:translateY(-20px);
+  transition:all .5s ease;
 }
 .trade-row.show{
   opacity:1;
   transform:translateY(0);
 }
-
-.green{color:#00ff9d;}
+.green{color:#22c55e;font-weight:700;}
 .red{color:#ff5c5c;}
 
-.hidden{display:none;}
-
-/* LOADER */
+/* LOADER OVERLAY */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+  flex-direction:column;
+}
 .loader{
   border:4px solid #eee;
   border-top:4px solid #3b6ef5;
   border-radius:50%;
-  width:40px;
-  height:40px;
+  width:50px;
+  height:50px;
   animation:spin 1s linear infinite;
-  margin:20px auto;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* CHART */
+.chart-wrapper{
+  border-radius:6px;
+  overflow:hidden;
+}
 .chart-box{height:240px;}
 
-/* SIGNAL BLOCKS */
+/* SIGNAL */
 .signal-box{
-  width:100%;
   height:56px;
   border-radius:16px;
   display:flex;
@@ -104,16 +122,16 @@ body{
   margin-top:12px;
 
   opacity:0;
-  transform:translateY(-20px) scale(.95);
-  transition:all .6s cubic-bezier(.2,.8,.2,1);
+  transform:translateY(-20px);
+  transition:.5s;
 }
 .signal-box.show{
   opacity:1;
-  transform:translateY(0) scale(1);
+  transform:translateY(0);
 }
 
-.pair-box{background:#3b6ef5;font-size:22px;}
-.time-box{background:#2a4475;font-size:20px;}
+.pair-box{background:#3b6ef5;font-size:22px;cursor:pointer;}
+.time-box{background:#2a4475;}
 .buy-box{background:#00c853;color:#00210f;}
 .sell-box{background:#ff3d3d;color:#1a0000;}
 
@@ -128,45 +146,51 @@ body{
   font-size:16px;
   cursor:pointer;
 }
+
+.hidden{display:none;}
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div>LOGO</div>
-  <div class="vip">VIP Status</div>
-</div>
-
 <div class="container">
 
-<div class="card">
-  <button class="main-btn" onclick="startSignal()">Get Signal</button>
-  <p id="signalsLeft" style="text-align:center;">Signals left today: 10/10</p>
+<div class="status">
+  <div class="vip-label">VIP Status</div>
+  <div class="connected">Connected</div>
 </div>
 
+<div id="startBlock" class="card">
+  <button class="main-btn" onclick="startSignal()">Get Signal</button>
+</div>
+
+<!-- СИГНАЛ ТЕПЕРЬ ВЫШЕ -->
+<div id="signalBlock" class="card hidden">
+  <div class="chart-wrapper">
+    <div id="chart" class="chart-box"></div>
+  </div>
+
+  <div id="pairBox" class="signal-box pair-box"></div>
+  <div id="timeBox" class="signal-box time-box"></div>
+  <div id="resultBox" class="signal-box"></div>
+
+  <button class="back-btn" onclick="resetApp()">Back</button>
+</div>
+
+<!-- ТРЕЙДЫ НИЖЕ -->
 <div class="card trades-card">
   <div id="tradeList"></div>
 </div>
 
-<div id="loading" class="card hidden">
+</div>
+
+<!-- OVERLAY -->
+<div id="overlay" class="overlay hidden">
   <div class="loader"></div>
-  <p style="text-align:center;">Analyzing... this may take up to 1 minute</p>
-</div>
-
-<div id="signalBlock" class="card hidden">
-  <div id="chart" class="chart-box"></div>
-  <div id="pairBox" class="signal-box pair-box"></div>
-  <div id="timeBox" class="signal-box time-box"></div>
-  <div id="resultBox" class="signal-box"></div>
-  <button class="back-btn" onclick="resetApp()">Back</button>
-</div>
-
+  <p>Analyzing...</p>
 </div>
 
 <script>
-
-let signals=10;
 
 const pairs=["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD",
 "EUR/GBP","EUR/JPY","EUR/CHF","EUR/AUD","EUR/CAD",
@@ -174,7 +198,7 @@ const pairs=["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/US
 "AUD/JPY","AUD/CAD","AUD/CHF",
 "CAD/JPY","CAD/CHF","CHF/JPY","NZD/JPY"];
 
-// ===== TRADES =====
+/* TRADES */
 function createTrade(){
   let isWin=Math.random()<0.8;
   let id=Math.floor(Math.random()*9000+1000)+"****";
@@ -182,7 +206,7 @@ function createTrade(){
 
   let div=document.createElement("div");
   div.className="trade-row";
-  div.innerHTML=`<div>Trader ID ${id}</div>
+  div.innerHTML=`<div>ID ${id}</div>
   <div class="${isWin?'green':'red'}">${isWin?'+':'-'}${value}$</div>`;
   return div;
 }
@@ -194,7 +218,6 @@ function initTrades(){
     list.appendChild(el);
     setTimeout(()=>el.classList.add("show"),50);
   }
-  setTimeout(()=>list.parentElement.style.height=list.offsetHeight+"px",100);
   loopTrades();
 }
 
@@ -207,29 +230,25 @@ function loopTrades(){
 
     if(list.children.length>5){
       let last=list.lastElementChild;
-      last.style.opacity=0;
-      setTimeout(()=>last.remove(),300);
+      last.remove();
     }
     loopTrades();
-  },Math.random()*4000+4000);
+  },4000+Math.random()*3000);
 }
 
-// ===== SIGNAL FLOW =====
+/* SIGNAL */
 async function startSignal(){
-  if(signals<=0)return;
 
-  signals--;
-  document.getElementById("signalsLeft").innerText=`Signals left today: ${signals}/10`;
-
-  resetVisuals();
-
-  document.getElementById("loading").classList.remove("hidden");
+  document.getElementById("overlay").classList.remove("hidden");
 
   await wait(3000);
 
-  document.getElementById("loading").classList.add("hidden");
+  document.getElementById("overlay").classList.add("hidden");
 
-  await runSignal();
+  document.getElementById("startBlock").classList.add("hidden");
+  document.getElementById("signalBlock").classList.remove("hidden");
+
+  runSignal();
 }
 
 async function runSignal(){
@@ -238,9 +257,6 @@ async function runSignal(){
   const minutes=[2,3,4,5][Math.floor(Math.random()*4)];
   const isBuy=Math.random()>0.5;
 
-  document.getElementById("signalBlock").classList.remove("hidden");
-
-  // chart
   new TradingView.widget({
     container_id:"chart",
     symbol:pair.replace('/',''),
@@ -249,14 +265,12 @@ async function runSignal(){
     height:240
   });
 
-  // 1. PAIR
   await wait(800);
   let pairEl=document.getElementById("pairBox");
   pairEl.innerText=pair;
   pairEl.classList.add("show");
 
-  // 2. TIME
-  await wait(random(3000,6000));
+  await wait(3000);
   const now=new Date();
   now.setMinutes(now.getMinutes()+minutes);
 
@@ -266,29 +280,29 @@ async function runSignal(){
   timeEl.innerText=t;
   timeEl.classList.add("show");
 
-  // 3. SIGNAL
-  await wait(random(3000,5000));
+  await wait(3000);
   let resEl=document.getElementById("resultBox");
   resEl.innerText=isBuy?"BUY ↑":"SELL ↓";
   resEl.className="signal-box show "+(isBuy?"buy-box":"sell-box");
 }
 
-// HELPERS
-function wait(ms){return new Promise(r=>setTimeout(r,ms));}
-function random(min,max){return Math.random()*(max-min)+min;}
+/* COPY */
+document.getElementById("pairBox").onclick=()=>{
+  navigator.clipboard.writeText(document.getElementById("pairBox").innerText);
+};
 
-function resetVisuals(){
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function resetApp(){
+  document.getElementById("signalBlock").classList.add("hidden");
+  document.getElementById("startBlock").classList.remove("hidden");
+
   document.getElementById("chart").innerHTML="";
   document.getElementById("pairBox").className="signal-box pair-box";
   document.getElementById("timeBox").className="signal-box time-box";
   document.getElementById("resultBox").className="signal-box";
 }
 
-function resetApp(){
-  document.getElementById("signalBlock").classList.add("hidden");
-}
-
-// INIT
 initTrades();
 
 </script>
