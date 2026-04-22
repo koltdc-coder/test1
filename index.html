@@ -31,32 +31,51 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:12px 16px;
+  padding: 10px 16px;
   background:#0f1a2a;
   border-radius:16px;
   border:1px solid #1f2c45;
+        font-size: 14px;
 }
 
 /* VIP */
 .vip{
-  background:#ffd600;
-  color:black;
+      background: #11146f78;
+    color: #f2dada;
   padding:6px 14px;
   border-radius:14px;
   font-weight:600;
 }
 
+/* CONNECTED + PULSE */
 .connected{
   color:#9bd1b4;
   font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.pulse{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#16c47f;
+  animation:pulse 1.6s ease-out infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(0.6);opacity:0.9}
+  80%{transform:scale(1.9);opacity:0}
+  100%{opacity:0}
 }
 
 /* CARD */
 .card{
-  background:#0e1828;
-  border-radius:16px;
-  border:1px solid #1f2c45;
-  padding:16px;
+     background: #141414ab;
+    border-radius: 16px;
+    border: 1px solid #7b6941;
+    padding: 16px;
 }
 
 .main-btn{
@@ -64,7 +83,7 @@ body{
   height:56px;
   border:none;
   border-radius:16px;
-  background:#3b6ef5;
+  background: linear-gradient(#ae7d16, #593a0b);
   color:white;
   font-size:18px;
   font-weight:600;
@@ -81,7 +100,7 @@ body{
   transform:translateY(-20px);
   transition:.5s;
 }
-.trade-row.show{opacity:1;transform:translateY(0);}
+.trade-row.show{opacity:1;transform:translateY(0);font-size: 14px;}
 .green{color:#22c55e;font-weight:700;}
 .red{color:#ff5c5c;font-weight:700;}
 
@@ -113,13 +132,13 @@ body{
 }
 .chart-box{
   width:100%;
-  aspect-ratio:1/1; /* КВАДРАТ */
+  aspect-ratio:1/1;
 }
 
 /* SIGNAL */
 .signal-box{
   height:56px;
-  border-radius:2px;
+  border-radius:4px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -133,20 +152,23 @@ body{
 .signal-box.show{opacity:1;transform:translateY(0);}
 
 .pair-box{
-  background: linear-gradient(#5b4ce9, #202bd6);
-  font-size:22px;
-  cursor:pointer;
-  box-shadow:0 6px 0 rgba(0,0,0,0.25);
-  transition:.1s;
+  background: linear-gradient(#423d35, #302e21);
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 rgb(39 24 0 / 25%);
+    transition: .1s;
 }
 .pair-box.active{
   transform:translateY(3px);
   box-shadow:0 2px 0 rgba(0,0,0,0.25);
 }
 
-.time-box{background:#2a4475;}
-.buy-box{background:#00c853;}
-.sell-box{background:#ff3d3d;}
+.time-box{    background: #1c1a11;
+    color: #c4bd4f;}
+.buy-box{background: #175d34;
+    border: 1px solid #45fd08;}
+.sell-box{background: #981a1a;
+    border: 1px solid #fd0808;}
 
 /* TIMER */
 .timer-wrap{
@@ -154,30 +176,33 @@ body{
   text-align:center;
 }
 .bar{
-  height:10px;
-  background:#222;
-  border-radius:10px;
-  overflow:hidden;
+  height: 10px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #7b6941;
 }
 .progress{
   height:100%;
-  background:white;
+  background: #b29130;
   width:100%;
 }
 .timer-text{
-  margin-top:6px;
-  font-size:14px;
-  opacity:.8;
+      margin-top: 6px;
+    font-size: 14px;
+    opacity: .8;
+    color: #b29231;
 }
 
 .back-btn{
-  width:100%;
-  height:52px;
-  margin-top:14px;
-  border:none;
-  border-radius:16px;
-  background:#2a4475;
-  color:white;
+ width: 100%;
+    height: 52px;
+    margin-top: 14px;
+    border: none;
+    border-radius: 74px;
+    background: #272727;
+    font-size: 16px;
+    color: white;
 }
 
 /* FOOTER */
@@ -197,12 +222,15 @@ body{
 <div class="container">
 
 <div class="status">
-  <div class="vip">VIP Status</div>
-  <div class="connected">Connected</div>
+  <div class="vip">Casper Trading</div>
+  <div class="connected">
+    <div class="pulse"></div>
+    Connected
+  </div>
 </div>
 
 <div id="startBlock" class="card">
-  <button class="main-btn" onclick="startSignal()">Get Signal</button>
+  <button class="main-btn" onclick="startSignal()">GET SIGNAL</button>
 </div>
 
 <div id="signalBlock" class="card hidden">
@@ -288,7 +316,7 @@ function loopTrades(){
     }
 
     loopTrades();
-  },4000+Math.random()*3000);
+  },7000+Math.random()*4000); // 7-11 сек
 }
 
 pairBox.addEventListener("touchstart",()=>pairBox.classList.add("active"));
@@ -308,7 +336,7 @@ async function startSignal(){
 async function runSignal(){
 
   const pair=pairs[Math.floor(Math.random()*pairs.length)];
-  const minutes=[2,3,5][Math.floor(Math.random()*3)];
+  const minutes=[2,3,4,5][Math.floor(Math.random()*4)];
 
   const now = new Date();
   const endTime = new Date(now);
