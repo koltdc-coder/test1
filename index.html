@@ -86,7 +86,7 @@ body{
   background: linear-gradient(#ae7d16, #593a0b);
   color:white;
   font-size:18px;
-  font-weight:600;
+  font-weight:700;
   cursor:pointer;
 }
 
@@ -165,10 +165,12 @@ body{
 
 .time-box{    background: #232015cf;
     color: #c4bd4f;}
-.buy-box{ background: #196237;
-    border: 1px solid #44aa22;}
-.sell-box{ background: #981a1a;
-    border: 1px solid #d70e0e;}
+.buy-box{  background: #104927;
+    border: 1px solid #3cc91b;
+    color: #3cc91b;}
+.sell-box{ background: #441316;
+    border: 1px solid #d02121;
+    color: #d02121;}
 
 /* TIMER */
 .timer-wrap{
@@ -270,7 +272,13 @@ Copyright © 2026 @mark_tr8 | All Rights Reserved
 
 <script>
 
-const pairs=["EUR/USD","GBP/USD","USD/JPY","AUD/USD"];
+const pairs=[
+
+"EUR/USD","GBP/USD","USD/JPY","USD/CHF","USD/CAD","AUD/USD","NZD/USD",
+"EUR/GBP","EUR/JPY","GBP/JPY","AUD/JPY","CHF/JPY","EUR/AUD","EUR/CAD",
+"EUR/CHF","GBP/AUD","GBP/CAD","GBP/CHF","AUD/CAD","AUD/CHF","CAD/CHF",
+"CAD/JPY","NZD/JPY","AUD/NZD","EUR/NZD","USD/TRY","USD/RUB","USD/MXN",
+"USD/ZAR","USD/SGD","USD/NOK","USD/SEK"];
 
 let timerRAF;
 let endTimestamp = 0;
