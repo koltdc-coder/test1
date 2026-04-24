@@ -99,6 +99,7 @@ body{
   opacity:0;
   transform:translateY(-20px);
   transition:.5s;
+    font-size: 14px;
 }
 .trade-row.show{opacity:1;transform:translateY(0);font-size: 14px;}
 .green{color:#22c55e;font-weight:700;}
@@ -216,6 +217,18 @@ body{
 }
 
 .hidden{display:none;}
+    
+    .desc {
+    background: linear-gradient(#1c1a12, #14120c);
+    border: 1px solid #7b6941;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 14px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #d6cfa3;
+}
 </style>
 </head>
 
@@ -232,6 +245,11 @@ body{
 </div>
 
 <div id="startBlock" class="card">
+    <div class="desc">
+    This program is designed to analyze the market during trading sessions.<br>
+    Always follow proper risk management and money management.<br>
+    Press the button below to get your signal.
+  </div>
   <button class="main-btn" onclick="startSignal()">GET SIGNAL</button>
 </div>
 
