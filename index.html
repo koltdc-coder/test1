@@ -34,7 +34,7 @@ body{
   padding: 10px 16px;
   background:#0f1a2a;
   border-radius:16px;
-  border:1px solid #1f2c45;
+  border: 1px solid #7c6942;
   font-size: 14px;
 }
 
@@ -153,10 +153,10 @@ body{
 .signal-box.show{opacity:1;transform:translateY(0);}
 
 .pair-box{
-      background: linear-gradient(#312c1e, #262215);
+            background: linear-gradient(#544827, #382e0f);
     font-size: 20px;
     cursor: pointer;
-    box-shadow: 0 6px 0 rgb(39 24 0 / 25%);
+    box-shadow: 0 6px 0 rgb(50 32 4 / 28%);
     transition: .1s;
 }
 .pair-box.active{
@@ -164,8 +164,8 @@ body{
   box-shadow:0 2px 0 rgba(0,0,0,0.25);
 }
 
-.time-box{    background: #232015cf;
-    color: #c4bd4f;}
+.time-box{background: #3e3824c2;
+    color: #c7bf42;}
 .buy-box{  background: #104927;
     border: 1px solid #3cc91b99;
     color: #3cc91b;}
@@ -230,6 +230,76 @@ body{
     line-height: 1.5;
     color: #d6cfa3;
 }
+
+/* ---------- new overlay styles (added) ---------- */
+.post-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  flex-direction: column;
+  transition: opacity 0.5s;
+}
+.post-overlay.hidden { display: none; }  /* ensure hidden works */
+
+.post-content {
+  background: #1c1a12;
+  border: 1px solid #7b6941;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  max-width: 296px;
+    width: 90%;
+}
+
+.btn-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.profit-btn {
+  padding: 12px 56px;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  color: white;
+  transition: transform 0.1s;
+}
+.profit-btn:active {
+  transform: scale(0.97);
+}
+
+.yes-btn {
+  background: #22c55e;
+}
+
+.no-btn {
+  background: #ef4444;
+}
+
+/* snowflake animation */
+.snowflake {
+  position: fixed;
+  top: -10px;
+  z-index: 2000;
+  pointer-events: none;
+  animation: fall linear forwards;
+  color: white;
+  font-size: 1.2em;
+  user-select: none;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+}
 </style>
 </head>
 
@@ -289,23 +359,54 @@ Copyright © 2026 @mark_tr8 | All Rights Reserved
   <p>Analyzing...</p>
 </div>
 
+<!-- ================== NEW: post‑timer overlay ================== -->
+<div id="postTimerOverlay" class="post-overlay hidden">
+  <div id="questionBlock" class="post-content">
+    <div class="desc" style="font-size:16px; margin-bottom:20px;">Did your trade turn a profit?</div>
+    <div class="btn-row">
+      <button id="yesBtn" class="profit-btn yes-btn">Yes</button>
+      <button id="noBtn" class="profit-btn no-btn">No</button>
+    </div>
+  </div>
+  <div id="congratBlock" class="post-content hidden">
+    <div class="desc" style="font-size:18px;">Congratulations!</div>
+  </div>
+  <div id="infoBlock" class="post-content hidden">
+    <div class="desc">
+      This is normal – according to money management rules – you should open an "overlapping trade"
+<br><br>
+1. Multiply the trade amount by x3<br>
+2. Set the expiry time to 2 minutes<br>
+3. Open a trade in the same direction<br><br>
+Do not open more than three overlapping trades in a row!
+    </div>
+    <button id="backFromInfoBtn" class="back-btn" style="margin-top:10px;">Back</button>
+  </div>
+</div>
+<!-- ================== end of new overlay ================== -->
+
 <script>
 
-const pairs=[
 
-"EUR/USD","GBP/USD","USD/JPY","USD/CHF","USD/CAD","AUD/USD","NZD/USD",
-"EUR/GBP","EUR/JPY","GBP/JPY","AUD/JPY","CHF/JPY","EUR/AUD","EUR/CAD",
-"EUR/CHF","GBP/AUD","GBP/CAD","GBP/CHF","AUD/CAD","AUD/CHF","CAD/CHF",
-"CAD/JPY","NZD/JPY","AUD/NZD","EUR/NZD","USD/TRY","USD/RUB","USD/MXN",
-"USD/ZAR","USD/SGD","USD/NOK","USD/SEK"];
+
+const pairs = [
+  "EUR/JPY", "GBP/JPY", "AUD/CAD", "AUD/CHF", "AUD/JPY",
+  "AUD/USD", "CAD/JPY", "CHF/JPY", "EUR/AUD", "EUR/CAD",
+  "EUR/GBP", "EUR/USD", "GBP/CAD", "GBP/CHF", "USD/CAD",
+  "USD/CHF", "USD/JPY", "GBP/USD", "GBP/AUD", "EUR/CHF",
+  "CAD/CHF"
+];
 
 let timerRAF;
 let endTimestamp = 0;
 let startTimestamp = 0;
 
+// ----- new variables -----
+let snowflakes = [];
+
 /* TRADES */
 function createTrade(){
-  let isWin=Math.random()<0.85;
+  let isWin=Math.random()<0.87;
 
   let value;
   if(isWin){
@@ -343,7 +444,7 @@ function loopTrades(){
     }
 
     loopTrades();
-  },7000+Math.random()*4000);
+  },8000+Math.random()*5000);
 }
 
 pairBox.addEventListener("touchstart",()=>pairBox.classList.add("active"));
@@ -404,6 +505,7 @@ function startSmoothTimer(){
   cancelAnimationFrame(timerRAF);
 
   const startDiff = Math.floor((endTimestamp - startTimestamp)/1000);
+  let timerExpired = false;   // guard to fire once
 
   function update(){
     const now = Date.now();
@@ -423,10 +525,25 @@ function startSmoothTimer(){
 
     if(diff>0){
       timerRAF=requestAnimationFrame(update);
+    } else {
+      // timer reached zero
+      progress.style.width = '0%';
+      timerText.innerText = `00:00 / ${String(totalMin).padStart(2,'0')}:${String(totalSec).padStart(2,'0')}`;
+      if(!timerExpired){
+        timerExpired = true;
+        onTimerEnd();
+      }
     }
   }
 
   update();
+}
+
+function onTimerEnd() {
+  // wait 2 seconds then show the profit question overlay
+  setTimeout(() => {
+    document.getElementById('postTimerOverlay').classList.remove('hidden');
+  }, 1000);
 }
 
 pairBox.onclick=()=>{
@@ -446,6 +563,68 @@ function resetApp(){
 }
 
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ---------------- new snow / overlay logic ----------------
+
+function startSnowfall() {
+  const container = document.body;
+  for (let i = 0; i < 50; i++) {
+    let flake = document.createElement('div');
+    flake.className = 'snowflake';
+    flake.innerHTML = '$';
+    flake.style.left = Math.random() * 100 + '%';
+    flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    flake.style.animationDelay = Math.random() * 2 + 's';
+    flake.style.fontSize = (Math.random() * 1.5 + 0.8) + 'em';
+    container.appendChild(flake);
+    snowflakes.push(flake);
+  }
+}
+
+function stopSnowfall() {
+  snowflakes.forEach(flake => flake.remove());
+  snowflakes = [];
+}
+
+function hidePostOverlayAndReset() {
+  const overlay = document.getElementById('postTimerOverlay');
+  overlay.classList.add('hidden');
+  // reset sub‑blocks for next time
+  document.getElementById('questionBlock').classList.remove('hidden');
+  document.getElementById('congratBlock').classList.add('hidden');
+  document.getElementById('infoBlock').classList.add('hidden');
+  stopSnowfall();
+  resetApp();
+}
+
+// yes button
+document.getElementById('yesBtn').addEventListener('click', () => {
+  document.getElementById('questionBlock').classList.add('hidden');
+  document.getElementById('congratBlock').classList.remove('hidden');
+  startSnowfall();
+
+  setTimeout(() => {
+    stopSnowfall();
+    const overlay = document.getElementById('postTimerOverlay');
+    overlay.style.opacity = '0';
+    overlay.addEventListener('transitionend', function handler() {
+      hidePostOverlayAndReset();
+      overlay.style.opacity = '1';   // restore for next time
+      overlay.removeEventListener('transitionend', handler);
+    });
+  }, 4000);
+});
+
+// no button
+document.getElementById('noBtn').addEventListener('click', () => {
+  document.getElementById('questionBlock').classList.add('hidden');
+  document.getElementById('infoBlock').classList.remove('hidden');
+});
+
+// back button inside info block
+document.getElementById('backFromInfoBtn').addEventListener('click', () => {
+  hidePostOverlayAndReset();
+});
 
 initTrades();
 
